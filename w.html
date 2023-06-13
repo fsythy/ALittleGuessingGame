@@ -1,0 +1,243 @@
+<canvas id="ctx" width="600" height="600";></canvas>
+<div>
+
+<input id="button1" type="submit" button class="button button1" onclick="SetGuessedColor(1);"/>
+<input id="button2" type="submit" button class="button button2" onclick="SetGuessedColor(2);"/>
+<input id="button3" type="submit" button class="button button3" onclick="SetGuessedColor(3);"/>
+<input id="button4" type="submit" button class="button button4" onclick="SetGuessedColor(4);"/>
+
+</div>
+<div>
+
+<input id="button5" type="submit" button class="button button5" onclick="SetGuessedColor(5);"/>
+<input id="button6" type="submit" button class="button button6" onclick="SetGuessedColor(6);"/>
+<input id="button7" type="submit" button class="button button7" onclick="SetGuessedColor(7);"/>
+<input id="button8" type="submit" button class="button button8" onclick="SetGuessedColor(8);"/>
+
+</div>
+<div>
+
+<input id="buttonDelete" type="button" value="Delete" onclick="SetGuessedColor(9);"/>
+
+</div>
+<div>
+
+<input id="buttonR" type="button" value="RESET" onclick="reset();"/>
+
+</div>
+<style>
+.button {
+  width: 20px;
+  margin-top: 20px;
+  line-height: 0px;
+  padding: 20 20px;
+  border-color: #966F33;
+  border-radius: 50%;
+}
+.button1 {
+  background: #FFFFFF;
+  color: #FFFFFF;
+}
+.button2 {
+  background: #FF0000;
+  color: #FF0000;
+}
+.button3 {
+  background: #00FF00;
+  color: #00FF00;
+}
+.button4 {
+  background: #0000FF;
+  color: #0000FF;
+}
+.button5 {
+  background: #000000;
+  color: #000000;
+}
+.button6 {
+  background: #FFFF00;
+  color: #FFFF00;
+}
+.button7 {
+  background: #FF00FF;
+  color: #FF00FF;
+}
+.button8 {
+  background: #00FFFF;
+  color: #00FFFF;
+}
+</style>
+<script>
+var ctx = document.getElementById("ctx").getContext("2d")
+const allEqual = arr => arr.every( v => v === arr[0])
+let ColorPallete = ['#966F33', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF', '#000000', '#FFFF00', '#FF00FF', '#00FFFF', '#C0C0C0']//All Colors Used in the game in a ROM for easy access
+var CorrectColor = generateUniqueNumbers(1, 8, 5);
+var GuessScore = [
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0]
+];
+var Grid = [
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9]
+]
+var CursorX = 0;
+var CursorY = 11;
+var win = 0
+ctx.globalAlpha = 1;
+ctx.fillStyle = ColorPallete[0];
+ctx.fillRect(0,0,400,600);
+DrawGrid();
+
+
+function reset(){
+CorrectColor = generateUniqueNumbers(1, 8, 5);
+GuessScore = [
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0]
+];
+Grid = [
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9],
+[9, 9, 9, 9, 9]
+]
+CursorX = 0;
+CursorY = 11;
+win = 0
+DrawGrid();
+}
+
+function generateUniqueNumbers(min, max, count) {
+  if (count > max - min + 1) {
+    return null;
+  }
+
+  var numbers = [];
+  while (numbers.length < count) {
+    var randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+    if (!numbers.includes(randomNumber)) {
+      numbers.push(randomNumber);
+    }
+  }
+
+  return numbers;
+}
+
+
+function DrawGrid(){
+  ctx.fillStyle = ColorPallete[0];
+  ctx.fillRect(0,0,400,600);
+  for(let Level = 11; Level > -1; Level--){
+    for(let i = 0; i < 5; i++){
+      if(Grid[Level].includes(9) && !allEqual(Grid[Level])){ctx.globalAlpha = ((Math.floor(Grid[Level][i] / 9)) + 1) / 2}else{ctx.globalAlpha = 1.0}
+      ctx.fillStyle = ColorPallete[Grid[Level][i]];
+      ctx.beginPath();
+      ctx.arc(((i + 1) * 50)-25, ((Level + 1) *50)-25, 20, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.fillStyle = ColorPallete[GuessScore[Level][i]];
+      ctx.globalAlpha = 1;
+      ctx.fillRect(300 + i*20, (Level *50)+5, 10, 40)
+    }
+  }
+} 
+
+
+function SetGuessedColor(ColorId){
+  if(ColorId == 9 && CursorX != 0){
+    CursorX--;
+    Grid[CursorY][CursorX] = ColorId;
+    DrawGrid();
+  }
+  if(!Grid[CursorY].includes(ColorId)){
+    Grid[CursorY][CursorX] = ColorId;
+    CursorX++;
+    if(CursorX == 5){
+      CursorX = 0; CursorY--;
+      CheckGuessScore();
+      if (checkWin()) {
+        alert("Congratulations! You've won the game!");
+      } else if(CursorY < 0 && !checkWin()){
+        alert("Oops! You lost.");
+      }
+    }
+    DrawGrid();
+  } 
+}
+
+
+function CheckGuessScore(){
+  for (let i = 0; i < 12; i++) {
+    if(Grid[i].includes(9)){continue;}
+    for (let j = 0; j < 5; j++) {
+      if(!CorrectColor.includes(Grid[i][j])){
+        GuessScore[i][j] = 2;
+        continue;
+      }
+      if (Grid[i][j] == CorrectColor[j]) {
+        GuessScore[i][j] = 3;
+      }else{
+      GuessScore[i][j] = 6;}
+    }
+  }
+  console.log(GuessScore);
+}
+
+
+
+function checkWin() {
+  for (let i = 0; i < 12; i++) {
+    let isCorrect = true;
+    for (let j = 0; j < 5; j++) {
+      if (Grid[i][j] !== CorrectColor[j]) {
+        isCorrect = false;
+        break;
+      }
+    }
+    if (isCorrect) {
+      return true; 
+    }
+  }
+
+  return false;
+}
+
+
+</script>
